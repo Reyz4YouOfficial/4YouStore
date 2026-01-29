@@ -18,35 +18,16 @@
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Plus Jakarta Sans', sans-serif; }
         body { background-color: var(--bg); color: var(--text); overflow-x: hidden; }
 
-        /* --- Hamburger Menu --- */
         .hamburger {
-            position: absolute;
-            top: 25px;
-            left: 30px;
-            z-index: 100;
-            cursor: pointer;
-            font-size: 1.2rem;
-            color: white;
-            transition: 0.3s;
-            background: rgba(255,255,255,0.05);
-            padding: 10px;
-            border-radius: 8px;
-            backdrop-filter: blur(5px);
+            position: absolute; top: 25px; left: 30px; z-index: 100; cursor: pointer;
+            font-size: 1.2rem; color: white; transition: 0.3s;
+            background: rgba(255,255,255,0.05); padding: 10px; border-radius: 8px; backdrop-filter: blur(5px);
         }
-        .hamburger:hover { color: var(--primary); background: rgba(0, 212, 255, 0.1); }
 
-        /* --- Sidebar --- */
         .sidebar {
-            position: fixed;
-            top: 0;
-            left: -320px;
-            width: 300px;
-            height: 100%;
-            background: var(--sidebar-bg);
-            backdrop-filter: blur(25px);
-            z-index: 99;
-            padding: 100px 30px;
-            transition: 0.5s cubic-bezier(0.77,0.2,0.05,1.0);
+            position: fixed; top: 0; left: -320px; width: 300px; height: 100%;
+            background: var(--sidebar-bg); backdrop-filter: blur(25px); z-index: 99;
+            padding: 100px 30px; transition: 0.5s cubic-bezier(0.77,0.2,0.05,1.0);
             border-right: 1px solid var(--border);
         }
         .sidebar.active { left: 0; }
@@ -55,14 +36,9 @@
         .profile-data label { font-size: 10px; color: var(--primary); letter-spacing: 2px; text-transform: uppercase; }
         .profile-data p { font-size: 1rem; font-weight: 300; margin-bottom: 15px; border-bottom: 1px solid var(--border); padding-bottom: 5px; }
 
-        /* --- Banner 16:6 --- */
         .banner {
-            position: relative;
-            width: 100%;
-            aspect-ratio: 16 / 6;
-            background: #000;
-            overflow: hidden;
-            border-bottom: 1px solid var(--border);
+            position: relative; width: 100%; aspect-ratio: 16 / 6;
+            background: #000; overflow: hidden; border-bottom: 1px solid var(--border);
         }
         video { width: 100%; height: 100%; object-fit: cover; opacity: 0.5; }
         .overlay-v { position: absolute; bottom: 0; width: 100%; height: 50%; background: linear-gradient(to top, var(--bg), transparent); z-index: 2; }
@@ -75,38 +51,27 @@
         #time { font-size: 2.2rem; font-weight: 200; }
         #date { font-size: 0.7rem; opacity: 0.5; letter-spacing: 2px; text-transform: uppercase; }
 
-        /* --- Menu Section --- */
         .menu-grid { padding: 40px; display: flex; gap: 15px; flex-wrap: wrap; }
         .btn-line {
-            padding: 12px 25px;
-            border: 1px solid var(--border);
-            text-decoration: none;
-            color: #94a3b8;
-            font-size: 0.75rem;
-            letter-spacing: 2px;
-            text-transform: uppercase;
-            transition: 0.3s;
-            display: flex;
-            align-items: center;
-            gap: 10px;
+            padding: 12px 25px; border: 1px solid var(--border); text-decoration: none;
+            color: #94a3b8; font-size: 0.75rem; letter-spacing: 2px; text-transform: uppercase;
+            transition: 0.3s; display: flex; align-items: center; gap: 10px;
         }
-        .btn-line:hover { color: white; border-color: var(--primary); background: rgba(0, 212, 255, 0.03); transform: translateY(-2px); }
+        .btn-line:hover { color: white; border-color: var(--primary); transform: translateY(-2px); }
 
         @media (max-width: 768px) { .banner { aspect-ratio: 16/9; } }
     </style>
 </head>
 <body>
 
-    <div class="hamburger" onclick="toggleSide()">
-        <i class="fas fa-bars"></i>
-    </div>
+    <div class="hamburger" onclick="toggleSide()"><i class="fas fa-bars"></i></div>
 
     <div class="sidebar" id="side">
         <div class="profile-data">
             <label>User Identity</label>
-            <p id="side-user">---</p>
+            <p id="side-user">Loading...</p>
             <label>Security Key</label>
-            <p id="side-pass" style="cursor: pointer;" title="Click to show/hide">••••••••</p>
+            <p id="side-pass">••••••••</p>
         </div>
         <a href="login.html" class="btn-line" style="justify-content: center;">Sign Out</a>
     </div>
@@ -116,14 +81,12 @@
             <source src="https://g.top4top.io/m_3672d3e6p5.mp4" type="video/mp4">
         </video>
         <div class="overlay-v"></div>
-        
         <div class="welcome-text">
             <h1>Welcome back, <b id="banner-user">Loading...</b></h1>
         </div>
-
         <div class="clock-text">
             <div id="time">00:00:00</div>
-            <div id="date">Loading...</div>
+            <div id="date">Day, 00 Month</div>
         </div>
     </div>
 
@@ -133,60 +96,47 @@
     </div>
 
     <script>
-        // Fungsi Toggle Sidebar
-        function toggleSide() { 
-            document.getElementById('side').classList.toggle('active'); 
-        }
+        function toggleSide() { document.getElementById('side').classList.toggle('active'); }
 
-        // MENGAMBIL DATA DARI USER.JSON
+        // MENGAMBIL DATA DARI USER.JSON DENGAN BENAR
         async function fetchUser() {
             try {
-                // Fetch mengambil file user.json di direktori yang sama
-                const response = await fetch('user.json');
+                // Gunakan cache breaker (?v=) supaya data selalu update saat json diubah
+                const response = await fetch('user.json?v=' + Date.now());
                 
-                if (!response.ok) {
-                    throw new Error("File user.json tidak ditemukan!");
-                }
-
+                if (!response.ok) throw new Error("Gagal mengambil file JSON");
+                
                 const data = await response.json();
                 
-                // Tampilkan Username ke Banner dan Sidebar
-                document.getElementById('banner-user').innerText = data.username;
-                document.getElementById('side-user').innerText = data.username;
-
-                // Fitur Show/Hide Password di Sidebar saat di-klik
+                // Update tampilan
+                document.getElementById('banner-user').textContent = data.username;
+                document.getElementById('side-user').textContent = data.username;
+                
+                // Password disembunyikan untuk keamanan, bisa di klik untuk lihat
                 const passField = document.getElementById('side-pass');
-                let hidden = true;
+                passField.style.cursor = "pointer";
                 passField.onclick = () => {
-                    if (hidden) {
-                        passField.innerText = data.password;
-                        hidden = false;
-                    } else {
-                        passField.innerText = "••••••••";
-                        hidden = true;
-                    }
+                    passField.textContent = (passField.textContent === "••••••••") ? data.password : "••••••••";
                 };
 
             } catch (err) {
-                console.error("Fetch Error:", err);
-                document.getElementById('banner-user').innerText = "Guest";
-                document.getElementById('side-user').innerText = "Guest Mode";
+                console.error("Error Detail:", err);
+                document.getElementById('banner-user').textContent = "Error Load";
+                document.getElementById('side-user').textContent = "Unknown User";
             }
         }
 
-        // Fungsi Jam & Tanggal Realtime
         function updateClock() {
             const now = new Date();
-            const optionsDate = { weekday: 'long', day: 'numeric', month: 'short' };
-            
-            document.getElementById('time').innerText = now.toLocaleTimeString('id-ID', { hour12: false });
-            document.getElementById('date').innerText = now.toLocaleDateString('id-ID', optionsDate);
+            document.getElementById('time').textContent = now.toLocaleTimeString('id-ID', { hour12: false });
+            document.getElementById('date').textContent = now.toLocaleDateString('id-ID', { weekday: 'long', day: 'numeric', month: 'short' });
         }
 
-        // Inisialisasi
         setInterval(updateClock, 1000);
         updateClock();
-        fetchUser();
+        
+        // Panggil fetchUser saat halaman dimuat
+        window.addEventListener('DOMContentLoaded', fetchUser);
     </script>
 </body>
 </html>
