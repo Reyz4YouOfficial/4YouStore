@@ -106,7 +106,7 @@
             <label>User Identity</label>
             <p id="side-user">---</p>
             <label>Security Key</label>
-            <p id="side-pass">••••••••</p>
+            <p id="side-pass" style="cursor: pointer;" title="Click to show/hide">••••••••</p>
         </div>
         <a href="login.html" class="btn-line" style="justify-content: center;">Sign Out</a>
     </div>
@@ -133,32 +133,57 @@
     </div>
 
     <script>
-        function toggleSide() { document.getElementById('side').classList.toggle('active'); }
+        // Fungsi Toggle Sidebar
+        function toggleSide() { 
+            document.getElementById('side').classList.toggle('active'); 
+        }
 
         // MENGAMBIL DATA DARI USER.JSON
         async function fetchUser() {
             try {
+                // Fetch mengambil file user.json di direktori yang sama
                 const response = await fetch('user.json');
+                
+                if (!response.ok) {
+                    throw new Error("File user.json tidak ditemukan!");
+                }
+
                 const data = await response.json();
                 
-                // Tampilkan ke Banner
+                // Tampilkan Username ke Banner dan Sidebar
                 document.getElementById('banner-user').innerText = data.username;
-                
-                // Tampilkan ke Sidebar
                 document.getElementById('side-user').innerText = data.username;
-                document.getElementById('side-pass').innerText = data.password;
+
+                // Fitur Show/Hide Password di Sidebar saat di-klik
+                const passField = document.getElementById('side-pass');
+                let hidden = true;
+                passField.onclick = () => {
+                    if (hidden) {
+                        passField.innerText = data.password;
+                        hidden = false;
+                    } else {
+                        passField.innerText = "••••••••";
+                        hidden = true;
+                    }
+                };
+
             } catch (err) {
-                console.error("Gagal load user.json. Pastikan pakai Local Server!");
+                console.error("Fetch Error:", err);
                 document.getElementById('banner-user').innerText = "Guest";
+                document.getElementById('side-user').innerText = "Guest Mode";
             }
         }
 
+        // Fungsi Jam & Tanggal Realtime
         function updateClock() {
             const now = new Date();
+            const optionsDate = { weekday: 'long', day: 'numeric', month: 'short' };
+            
             document.getElementById('time').innerText = now.toLocaleTimeString('id-ID', { hour12: false });
-            document.getElementById('date').innerText = now.toLocaleDateString('id-ID', { weekday: 'long', day: 'numeric', month: 'short' });
+            document.getElementById('date').innerText = now.toLocaleDateString('id-ID', optionsDate);
         }
 
+        // Inisialisasi
         setInterval(updateClock, 1000);
         updateClock();
         fetchUser();
